@@ -28,7 +28,7 @@ export async function register(req,res) {
         html: `
                 <p>Hi ${username},</p>
                 <p>Thank you for registering at <strong>Perplexity</strong>. We're excited to have you on board!</p>
-                <a href='http://localhost:3000/api/auth/verify-email?token=${token}'>Verify Email</a>
+                <a href='https://nexo-ai-e7li.onrender.com/api/auth/verify-email?token=${token}'>Verify Email</a>
                 <p>Best regards,<br>The Perplexity Team</p>`
     })
 
@@ -62,7 +62,7 @@ export async function resendVerificationEmail(req,res){
         html: `
                 <p>Hi ${user.username},</p>
                 <p>Thank you for registering at <strong>Perplexity</strong>. We're excited to have you on board!</p>
-                <a href='http://localhost:3000/api/auth/verify-email?token=${token}'>Verify Email</a>
+                <a href='https://nexo-ai-e7li.onrender.com/api/auth/verify-email?token=${token}'>Verify Email</a>
                 <p>Best regards,<br>The Perplexity Team</p>`
     })
     }
