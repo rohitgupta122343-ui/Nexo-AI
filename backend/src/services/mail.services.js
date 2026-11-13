@@ -1,40 +1,57 @@
-import nodemailer from 'nodemailer'
+import { google } from 'googleapis';
 
-const transport = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        type: 'OAuth2',
-        user: process.env.GOOGLE_CLIENT_USER,
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRECT, // Render par bhi yahi spelling honi chahiye
-        refreshToken: process.env.GOOGLE_REFRESH_TOKEN
-    }
-})
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRECT, // Wahi spelling jo aapne pehle rakhi thi
+  'https://developers.google.com/oauthplayground'
+);
 
-transport.verify((error, success) => {
-  if (error) {
-    console.error('Error connecting to email server:', error);
-  } else {
-    console.log('Email server is ready to send messages');
-  }
+oauth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
 });
 
-export async function sendEmail({from, to, subject, text, html}) {
-  const mailOptions = {
-        from: process.env.GOOGLE_CLIENT_USER,
-        to,
-        subject,
-        html,
-        text
-    }
+const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
-    const details = await transport.sendMail(mailOptions)
-    console.log(details)
+export async function sendEmail({ from, to, subject, text, html }) {
+  try {
+    const sender = process.env.GOOGLE_CLIENT_USER;
+    const messageBody = html || text;
+
+    // Email ko RFC 2822 format mein banayein
+    const emailLines = [
+      `From: ${sender}`,
+      `To: ${to}`,
+      `Subject: ${subject}`,
+      'MIME-Version: 1.0',
+      'Content-Type: text/html; charset=utf-8',
+      '',
+      messageBody,
+    ];
+
+    const email = emailLines.join('\r\n');
+
+    // Base64URL encode karein (Gmail API ki requirement)
+    const encodedMessage = Buffer.from(email)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    const res = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: encodedMessage,
+      },
+    });
+
+    console.log('Email sent via Gmail API:', res.data);
     return {
-        success: true,
-        message: 'Email sent successfully',
-        messageId: details.messageId
-    }
+      success: true,
+      message: 'Email sent successfully',
+      messageId: res.data.id,
+    };
+  } catch (error) {
+    console.error('Error sending email via Gmail API:', error);
+    throw error;
+  }
 }
