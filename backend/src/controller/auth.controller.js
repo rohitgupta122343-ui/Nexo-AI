@@ -100,7 +100,7 @@ export async function verifyEmail(req,res){
             `
         <h1>Email Verified Successfully!</h1>
         <p>Your email has been verified. You can now log in to your account.</p>
-        <a href="http://localhost:5173/login">Go to Login</a>`
+        <a href="https://nexo69ai.vercel.app/login">Go to Login</a>`
 
         return res.send(html)
 

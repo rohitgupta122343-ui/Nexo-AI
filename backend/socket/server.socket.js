@@ -7,7 +7,7 @@ export function initSocket(httpServer){
 
     io = new Server(httpServer,{
         cors:{
-            origin:'http://localhost:5173',
+            origin:'https://nexo69ai.vercel.app',
             credentials:true
         }
     })

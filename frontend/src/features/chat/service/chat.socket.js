@@ -3,7 +3,7 @@ import {io} from 'socket.io-client'
 
 export function initSocketConnection(){
 
-    const socket = io("http://localhost:3000",{
+    const socket = io("https://nexo-ai-e7li.onrender.com",{
         withCredentials:true
     })
 
