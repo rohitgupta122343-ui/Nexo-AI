@@ -1,15 +1,14 @@
-
 import nodemailer from 'nodemailer'
 
 const transport = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,       // Change from 587 to 465
-    secure: true,    // Must be true for port 465
+    port: 465,
+    secure: true,
     auth: {
         type: 'OAuth2',
         user: process.env.GOOGLE_CLIENT_USER,
         clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRECT, // (Note: Check if 'SECRECT' has a typo in your env vars!)
+        clientSecret: process.env.GOOGLE_CLIENT_SECRECT, // Render par bhi yahi spelling honi chahiye
         refreshToken: process.env.GOOGLE_REFRESH_TOKEN
     }
 })
@@ -22,9 +21,7 @@ transport.verify((error, success) => {
   }
 });
 
-
-export async function sendEmail({from,to,subject,text,html}){
-
+export async function sendEmail({from, to, subject, text, html}) {
   const mailOptions = {
         from: process.env.GOOGLE_CLIENT_USER,
         to,
@@ -40,10 +37,4 @@ export async function sendEmail({from,to,subject,text,html}){
         message: 'Email sent successfully',
         messageId: details.messageId
     }
-
 }
-
-
-
-
-
