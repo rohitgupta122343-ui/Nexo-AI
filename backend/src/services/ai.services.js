@@ -21,15 +21,29 @@ const internetSerachTool = tool(
 )
 
 const emailSendTool = tool(
-    sendEmail,
+    async ({ to, subject, html, text }) => {
+
+        console.log("sendMail tool called:", to)
+
+        const result = await sendEmail({
+            to,
+            subject,
+            html,
+            text
+        })
+
+        console.log("sendMail result:", result)
+
+        return result
+    },
     {
         name: 'sendMail',
-        description: 'Send an email to the recipient',
+        description: 'Actually send an email using the recipient email address, subject and email body.',
         schema: z.object({
             to: z.string().email(),
             subject: z.string(),
-            html: z.string().describe('HTML email body'),
-            text: z.string().optional().describe('Plain text email body')
+            html: z.string(),
+            text: z.string().optional()
         })
     }
 )
@@ -54,6 +68,15 @@ const agent = createAgent({
 - Use sendMail with to, subject, html and text.
 - Never claim success without tool confirmation.
 - Ask for missing recipient information.
+EMAIL RULES:
+
+1. When the user explicitly asks to send an email, you MUST call sendMail.
+2. Never pretend that an email was sent.
+3. Generate a suitable subject and email body.
+4. If recipient email is missing, ask the user for it.
+5. Wait for the sendMail tool result.
+6. Only say email sent successfully if the tool returns success: true.
+7. If the tool fails, explain the error.
     `
 })
 
