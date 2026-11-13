@@ -45,33 +45,32 @@
 
 
 
-import { BrevoClient } from '@getbrevo/brevo'
 
-const brevo = new BrevoClient({
-    apiKey: process.env.BREVO_API_KEY
-})
+import { Resend } from 'resend'
 
-export async function sendEmail({to, subject, text, html}) {
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+export async function sendEmail({ to, subject, text, html }) {
     try {
-        const response = await brevo.transactionalEmails.sendTransacEmail({
-            sender: {
-                email: process.env.BREVO_SENDER_EMAIL,
-                name: 'Nexo AI'
-            },
-            to: [
-                { email: to }
-            ],
+        const { data, error } = await resend.emails.send({
+            from: 'Nexo AI (Rohit Gupta) <onboarding@resend.dev>',
+            to: [to],
             subject,
-            htmlContent: html,
-            textContent: text
+            html,
+            text
         })
 
-        console.log('Email sent:', response.messageId)
+        if (error) {
+            console.error('Resend Error:', error)
+            throw new Error(error.message)
+        }
+
+        console.log('Email sent:', data.id)
 
         return {
             success: true,
             message: 'Email sent successfully',
-            messageId: response.messageId
+            messageId: data.id
         }
 
     } catch (error) {
