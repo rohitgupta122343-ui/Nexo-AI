@@ -44,46 +44,40 @@
 
 
 
-import {
-    TransactionalEmailsApi,
-    TransactionalEmailsApiApiKeys,
-    SendSmtpEmail
-} from '@getbrevo/brevo'
 
-const api = new TransactionalEmailsApi()
+import { BrevoClient } from '@getbrevo/brevo'
 
-api.setApiKey(
-    TransactionalEmailsApiApiKeys.apiKey,
-    process.env.BREVO_API_KEY
-)
+const brevo = new BrevoClient({
+    apiKey: process.env.BREVO_API_KEY
+})
 
 export async function sendEmail({to, subject, text, html}) {
     try {
-        const email = new SendSmtpEmail()
+        const response = await brevo.transactionalEmails.sendTransacEmail({
+            sender: {
+                email: process.env.BREVO_SENDER_EMAIL,
+                name: 'Nexo AI'
+            },
+            to: [
+                { email: to }
+            ],
+            subject,
+            htmlContent: html,
+            textContent: text
+        })
 
-        email.sender = {
-            email: process.env.BREVO_SENDER_EMAIL,
-            name: 'Nexo AI'
-        }
-
-        email.to = [{email: to}]
-        email.subject = subject
-        email.htmlContent = html
-        email.textContent = text
-
-        const response = await api.sendTransacEmail(email)
-
-        console.log('Email sent:', response.body)
+        console.log('Email sent:', response.messageId)
 
         return {
             success: true,
             message: 'Email sent successfully',
-            messageId: response.body?.messageId
+            messageId: response.messageId
         }
 
     } catch (error) {
-        console.error('Email error:', error.response?.body || error)
+        console.error('Email error:', error)
         throw error
     }
 }
+
 
