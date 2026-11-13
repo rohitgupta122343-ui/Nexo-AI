@@ -3,13 +3,13 @@ import nodemailer from 'nodemailer'
 
 const transport = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    port: 465,       // Change from 587 to 465
+    secure: true,    // Must be true for port 465
     auth: {
         type: 'OAuth2',
         user: process.env.GOOGLE_CLIENT_USER,
         clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRECT,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRECT, // (Note: Check if 'SECRECT' has a typo in your env vars!)
         refreshToken: process.env.GOOGLE_REFRESH_TOKEN
     }
 })
